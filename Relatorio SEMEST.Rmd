@@ -1,0 +1,77 @@
+---
+title: "Relatório da SEMEST"
+author: "Rodrigo Almeida Figueira e Thiago Miranda"
+date: "06/07/2021"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+
+df <- iris
+```
+
+## Quantidade de Espécies
+
+```{r}
+df %>% 
+  count(Species) %>% knitr::kable()
+
+```
+
+
+
+
+## Sepal
+
+```{r, fig.align='center'}
+
+df %>% 
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+    geom_point(show.legend = FALSE) +
+      facet_wrap(~Species) +
+        theme_minimal()
+```
+
+## Petal
+
+```{r, fig.align='center', fig.dim=c(10,7)}
+library(patchwork)
+
+g1 <- df %>% 
+  ggplot(aes(x = Petal.Length, y = Species, fill = Species)) +
+    geom_boxplot() +
+      theme_minimal()
+
+g2 <- df %>% 
+  ggplot(aes(x = Petal.Width, y = Species, fill = Species)) +
+    geom_boxplot() +
+      theme_minimal() +
+        scale_fill_manual(values = c("#f54242", "#5442f5", "#60f542"))
+
+g1 / g2
+```
+
+## Pela vs Sepal
+
+```{r, fig.align='center', fig.dim=c(10,7)}
+df %>% 
+  group_by(Species) %>% 
+    summarise(
+      across(
+        .cols = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"),
+        .fns = mean,
+        na.rm = TRUE
+      )
+    ) %>% 
+  ggplot(aes(x = Species, y = Sepal.Length, fill = Species)) + 
+    geom_col(show.legend = FALSE) +
+      geom_label(aes(x = Species, y = Sepal.Length, label = Sepal.Length), show.legend = FALSE) +
+        scale_fill_manual(values = c("tomato", "dark blue", "red"))
+
+
+```
+
+
+
+
